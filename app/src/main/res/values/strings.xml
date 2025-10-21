@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">RecipeHub</string>
+    <string name="default_web_client_id">YOUR_WEB_CLIENT_ID</string>
+    <string name="server_client_id">792807358081-j3rl0pi0d8tofru7vnb8323o8214ijq8.apps.googleusercontent.com</string>
+</resources>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Интернет и сеть -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Доступ к изображениям -->
+    <!-- Для Android 12 и ниже -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <!-- Для Android 13 и выше -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.RecipeHub">
+
+        <meta-data
+            android:name="com.google.android.gms.auth.api.signin.clientId"
+            android:value="@string/server_client_id" />
+
+        <meta-data
+            android:name="com.google.android.gms.auth.api.identity.serverClientId"
+            android:value="@string/server_client_id" />
+
+
+        <!-- Екран редагування профілю -->
+        <activity android:name=".ui.EditProfileActivity" />
+
+
+        <activity
+            android:name=".ui.AuthActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".ui.AuthRedirectActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Змініть FRONTEND_URL в бекенді на цей URL -->
+                <data android:scheme="http"
+                    android:host="localhost"
+                    android:port="5173"
+                    android:path="/auth/google/callback" />
+            </intent-filter>
+        </activity>
+
+
+        <!-- Профіль -->
+        <activity android:name=".ui.ProfileActivity" />
+
+        <!-- Реєстрація -->
+        <activity android:name=".ui.RegistrationActivity" />
+
+        <!-- Логін -->
+        <activity
+            android:name=".ui.LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
