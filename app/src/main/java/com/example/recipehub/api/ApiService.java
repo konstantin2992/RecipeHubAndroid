@@ -1,7 +1,7 @@
 package com.example.recipehub.api;
 
 import com.example.recipehub.model.AuthResponse;
-import com.example.recipehub.model.AvatarResponse;
+
 import com.example.recipehub.model.GoogleAuthRequest;
 import com.example.recipehub.model.LoginRequest;
 import com.example.recipehub.model.RegisterRequest;

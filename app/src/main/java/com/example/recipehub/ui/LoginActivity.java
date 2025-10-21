@@ -1,19 +1,13 @@
 package com.example.recipehub.ui;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-import android.net.Uri;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.browser.customtabs.CustomTabsIntent;
-
 import com.example.recipehub.R;
 import com.example.recipehub.model.AuthResponse;
 import com.example.recipehub.model.LoginRequest;
@@ -21,9 +15,6 @@ import com.example.recipehub.model.User;
 import com.example.recipehub.api.ApiService;
 import com.example.recipehub.api.RetrofitClient;
 import com.example.recipehub.utils.SessionManager;
-
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

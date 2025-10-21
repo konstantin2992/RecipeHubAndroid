@@ -4,15 +4,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.recipehub.utils.SessionManager;
-import com.example.recipehub.utils.TokenManager;
-import com.example.recipehub.utils.UserManager;
-
 import org.json.JSONObject;
-
 import java.net.URLDecoder;
 
 public class AuthRedirectActivity extends AppCompatActivity {
