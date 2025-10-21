@@ -55,7 +55,6 @@ public class RegistrationActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> onBackPressed());
     }
     private void openGoogleAuth() {
-        // ✅ Та же самая функция что и в LoginActivity
         String googleUrl = "http://10.0.2.2:5000/api/auth/google";
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(googleUrl));
         startActivity(intent);
@@ -69,38 +68,38 @@ public class RegistrationActivity extends AppCompatActivity {
         String pass = etPassword.getText().toString();
         String conf = etConfirm.getText().toString();
 
-        // --- Проверка на пустые поля ---
+        //Проверка на пустые поля
         if (TextUtils.isEmpty(first) || TextUtils.isEmpty(last) ||
                 TextUtils.isEmpty(email) || TextUtils.isEmpty(pass) || TextUtils.isEmpty(conf)) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // --- Проверка имени ---
+        //Проверка имени
         if (!NAME_PATTERN.matcher(first).matches()) {
             Toast.makeText(this, "Invalid first name (only letters, 2–30 chars)", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // --- Проверка фамилии ---
+        //Проверка фамилии
         if (!NAME_PATTERN.matcher(last).matches()) {
             Toast.makeText(this, "Invalid last name (only letters, 2–30 chars)", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // --- Проверка Email ---
+        //Проверка Email
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches() || !GMAIL_PATTERN.matcher(email).matches()) {
             Toast.makeText(this, "Email must be valid Gmail address", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // --- Проверка пароля ---
+        //Проверка пароля
         if (!PASSWORD_PATTERN.matcher(pass).matches()) {
             Toast.makeText(this, "Password must be ≥8 chars with upper, lower case and number", Toast.LENGTH_LONG).show();
             return;
         }
 
-        // --- Проверка совпадения паролей ---
+        //Проверка совпадения паролей
         if (!pass.equals(conf)) {
             Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
             return;

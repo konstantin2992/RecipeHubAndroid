@@ -7,8 +7,8 @@ import android.util.Log;
 import com.example.recipehub.model.User;
 
 /**
- * SessionManager – зберігає та завантажує дані користувача через SharedPreferences
- * Після переходу на сервер: зберігає JWT токен і дані користувача
+  зберігає та завантажує дані користувача через SharedPreferences
+  Після переходу на сервер: зберігає JWT токен і дані користувача
  */
 public class SessionManager {
     private static final String PREF_NAME = "recipehub_session";
@@ -33,7 +33,7 @@ public class SessionManager {
         editor = prefs.edit();
     }
 
-    /** Зберігає користувача + токен після логіну або реєстрації */
+    //Зберігає користувача + токен після логіну або реєстрації
     public void saveUser(User user, String token) {
         if (user != null) {
             editor.putInt(KEY_ID, user.getUser_id());
@@ -53,7 +53,7 @@ public class SessionManager {
         Log.d("SESSION_DEBUG", "Saved token: " + token);
     }
 
-    /** НОВИЙ МЕТОД: Зберігає тільки токен для Google auth */
+    // Зберігає тільки токен для Google auth
     public void saveTokenOnly(String token) {
         editor.putString(KEY_TOKEN, token);
         editor.putBoolean(KEY_LOGGED_IN, true);
@@ -61,7 +61,7 @@ public class SessionManager {
         Log.d("SESSION_DEBUG", "Saved token only: " + token);
     }
 
-    /** НОВИЙ МЕТОД: Зберігає дані з JSON для Google auth */
+    //  Зберігає дані з JSON для Google auth
     public void saveUserFromJson(int userId, String firstName, String lastName,
                                  String email, String avatar, String aboutUser) {
         editor.putInt(KEY_ID, userId);
@@ -76,7 +76,7 @@ public class SessionManager {
         Log.d("SESSION_DEBUG", "Saved user from JSON: " + email);
     }
 
-    /** Оновлення профілю (локально) */
+    //Оновлення профілю (локально)
     public void updateUser(User user) {
         editor.putString(KEY_FIRST, user.getFirst_name());
         editor.putString(KEY_LAST, user.getLast_name());
@@ -88,7 +88,7 @@ public class SessionManager {
         editor.apply();
     }
 
-    /** Отримання користувача */
+    // Отримання користувача
     public User getUser() {
         User u = new User();
         u.setUser_id(prefs.getInt(KEY_ID, 0));
@@ -102,19 +102,19 @@ public class SessionManager {
         return u;
     }
 
-    /** Отримання токена */
+    //Отримання токена
     public String getToken() {
         return prefs.getString(KEY_TOKEN, null);
     }
 
-    /** Перевірка, чи користувач залогінений */
+    //Перевірка, чи користувач залогінений
     public boolean isLoggedIn() {
         boolean loggedIn = prefs.getBoolean(KEY_LOGGED_IN, false) && getToken() != null;
         Log.d("SESSION_DEBUG", "isLoggedIn: " + loggedIn);
         return loggedIn;
     }
 
-    /** Вихід із профілю */
+    // Вихід із профілю
     public void logout() {
         editor.putBoolean(KEY_LOGGED_IN, false);
         editor.apply();
@@ -125,13 +125,13 @@ public class SessionManager {
         return token != null && !token.isEmpty();
     }
 
-    /** Примусово зберігає токен (для веб-авторизації) */
+    // Примусово зберігає токен (для веб-авторизації)
     public void forceSaveToken(String token) {
         editor.putString(KEY_TOKEN, token);
         editor.putBoolean(KEY_LOGGED_IN, true);
         editor.apply();
     }
-    /** Повне очищення сесії */
+    // Повне очищення сесії
     public void clear() {
         editor.clear().apply();
         Log.d("SESSION_DEBUG", "Session cleared completely");
