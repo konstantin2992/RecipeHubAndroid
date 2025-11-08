@@ -7,10 +7,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager2.widget.ViewPager2;
+
 import com.bumptech.glide.Glide;
 import com.example.recipehub.R;
 import com.example.recipehub.model.User;
 import com.example.recipehub.utils.SessionManager;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 public class ProfileActivity extends AppCompatActivity {
     private static final int EDIT_PROFILE_REQUEST = 1001;
@@ -19,7 +23,8 @@ public class ProfileActivity extends AppCompatActivity {
     private ImageView avatar;
     private Button btnEdit, btnLogout;
     private SessionManager session;
-
+    private TabLayout tabLayout;
+    private ViewPager2 viewPager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +33,14 @@ public class ProfileActivity extends AppCompatActivity {
         initializeViews();
         setupClickListeners();
         loadData();
+        tabLayout = findViewById(R.id.tabLayout);
+        viewPager = findViewById(R.id.viewPager);
+        viewPager.setAdapter(new ProfilePagerAdapter(this));
+
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            if (position == 0) tab.setText("Мої рецепти");
+            else tab.setText("Улюблені рецепти");
+        }).attach();
     }
 
     private void initializeViews() {
