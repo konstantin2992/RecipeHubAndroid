@@ -12,7 +12,6 @@ public class User {
 
     public User() { }
 
-    // Геттеры и сеттеры
     public int getUser_id() { return user_id; }
     public void setUser_id(int user_id) { this.user_id = user_id; }
 

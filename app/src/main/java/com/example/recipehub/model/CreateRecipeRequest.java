@@ -26,12 +26,12 @@ public class CreateRecipeRequest {
         this.ingredients = ingredients;
     }
 
-    // Геттеры
-    public int getCategoryId() { return category_id; }
+    // Геттеры с правильными именами (совпадающими с бекендом)
+    public int getCategory_id() { return category_id; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public String getDifficulty() { return difficulty; }
-    public int getPrepTime() { return prep_time; }
+    public int getPrep_time() { return prep_time; }
     public int getServing() { return serving; }
     public List<Step> getSteps() { return steps; }
     public List<Ingredient> getIngredients() { return ingredients; }

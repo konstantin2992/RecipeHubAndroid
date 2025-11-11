@@ -1,5 +1,6 @@
 package com.example.recipehub.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +23,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MyRecipesFragment extends Fragment {
+public class MyRecipesFragment extends Fragment implements MyRecipesAdapter.OnRecipeClickListener {
     private RecyclerView recycler;
     private ApiService api;
     private SessionManager session;
@@ -45,10 +46,11 @@ public class MyRecipesFragment extends Fragment {
             public void onResponse(Call<MyRecipesResponse> call, Response<MyRecipesResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Recipe> list = response.body().getRecipes();
-                    recycler.setAdapter(new MyRecipesAdapter(list, api, session));
+                    // Используем конструктор с listener
+                    recycler.setAdapter(new MyRecipesAdapter(list, api, session, MyRecipesFragment.this));
                 } else {
                     Toast.makeText(getContext(), "No recipes yet", Toast.LENGTH_SHORT).show();
-                    recycler.setAdapter(null); // Очищаем адаптер если нет рецептов
+                    recycler.setAdapter(null);
                 }
             }
 
@@ -57,5 +59,21 @@ public class MyRecipesFragment extends Fragment {
                 Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void onRecipeClick(Recipe recipe) {
+        // Открыть карточку рецепта для просмотра
+        Intent intent = new Intent(getActivity(), RecipeDetailActivity.class);
+        intent.putExtra("recipe_id", recipe.getRecipe_id());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onEditClick(Recipe recipe) {
+        // Открыть активность редактирования
+        Intent intent = new Intent(getActivity(), EditRecipeActivity.class);
+        intent.putExtra("recipe", recipe);
+        startActivity(intent);
     }
 }

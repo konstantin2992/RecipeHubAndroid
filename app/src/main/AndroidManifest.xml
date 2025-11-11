@@ -37,12 +37,16 @@
 
         <!-- Екран редагування профілю -->
         <activity android:name=".ui.EditProfileActivity" />
+        <activity
+            android:name=".ui.CreateRecipeActivity"
+            android:label="Створення рецепту"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
 
-
+        <activity android:name=".ui.EditRecipeActivity" />
         <activity
             android:name=".ui.AuthActivity"
             android:exported="true" />
-
+        <activity android:name=".ui.RecipeDetailActivity" />
         <activity
             android:name=".ui.AuthRedirectActivity"
             android:exported="true">

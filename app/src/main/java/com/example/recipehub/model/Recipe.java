@@ -1,7 +1,9 @@
 package com.example.recipehub.model;
 
+import java.io.Serializable;
 import java.util.List;
-public class Recipe {
+
+public class Recipe implements Serializable {
     private int recipe_id;
     private int category_id;
     private String title;

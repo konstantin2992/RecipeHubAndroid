@@ -2,6 +2,8 @@ package com.example.recipehub.api;
 
 import com.example.recipehub.model.AuthResponse;
 
+import com.example.recipehub.model.CategoryResponse;
+import com.example.recipehub.model.DirectRecipeResponse;
 import com.example.recipehub.model.FavoritesResponse;
 import com.example.recipehub.model.GoogleAuthRequest;
 import com.example.recipehub.model.LoginRequest;
@@ -58,23 +60,24 @@ public interface ApiService {
     );
 
     // ======== RECIPE ENDPOINTS ========
-
+    @GET("categories")
+    Call<CategoryResponse> getCategories();
     @Multipart
-    @POST("recipes")
+    @POST("recipes") // Убедитесь что это правильный endpoint
     Call<SimpleResponse> createRecipe(
-            @Header("Authorization") String token,
+            @Header("Authorization") String authorization,
             @Part MultipartBody.Part image,
-            @Part List<MultipartBody.Part> stepImages,
             @Part("category_id") RequestBody categoryId,
             @Part("title") RequestBody title,
             @Part("description") RequestBody description,
             @Part("difficulty") RequestBody difficulty,
             @Part("prep_time") RequestBody prepTime,
             @Part("serving") RequestBody serving,
-            @Part("steps") RequestBody stepsJson,
-            @Part("ingredients") RequestBody ingredientsJson
+            @Part("steps") RequestBody steps,
+            @Part("ingredients") RequestBody ingredients
     );
-
+    @GET("recipes/{id}")
+    Call<DirectRecipeResponse> getRecipeDetails(@Path("id") int recipeId);
     @Multipart
     @PUT("recipes/{id}")
     Call<SimpleResponse> updateRecipe(

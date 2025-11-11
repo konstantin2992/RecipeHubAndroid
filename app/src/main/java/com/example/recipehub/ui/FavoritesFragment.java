@@ -1,5 +1,6 @@
 package com.example.recipehub.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +23,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FavoritesFragment extends Fragment {
+public class FavoritesFragment extends Fragment implements MyRecipesAdapter.OnRecipeClickListener {
     private RecyclerView recycler;
     private ApiService api;
     private SessionManager session;
@@ -45,9 +46,11 @@ public class FavoritesFragment extends Fragment {
             public void onResponse(Call<FavoritesResponse> call, Response<FavoritesResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Recipe> list = response.body().getFavorites();
-                    recycler.setAdapter(new MyRecipesAdapter(list, api, session));
+                    // Используем конструктор с listener
+                    recycler.setAdapter(new MyRecipesAdapter(list, api, session, FavoritesFragment.this));
                 } else {
                     Toast.makeText(getContext(), "No favorites yet", Toast.LENGTH_SHORT).show();
+                    recycler.setAdapter(null);
                 }
             }
 
@@ -56,5 +59,25 @@ public class FavoritesFragment extends Fragment {
                 Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void onRecipeClick(Recipe recipe) {
+        // Открыть карточку рецепта для просмотра
+        Intent intent = new Intent(getActivity(), RecipeDetailActivity.class);
+        intent.putExtra("recipe_id", recipe.getRecipe_id());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onEditClick(Recipe recipe) {
+        // Для избранных рецептов редактирование может быть недоступно
+        // или можно открыть детали с возможностью редактирования если это рецепт пользователя
+        Toast.makeText(getContext(), "Edit your recipe in 'My Recipes' section", Toast.LENGTH_SHORT).show();
+
+        // Альтернативно: открыть просмотр вместо редактирования
+        Intent intent = new Intent(getActivity(), RecipeDetailActivity.class);
+        intent.putExtra("recipe_id", recipe.getRecipe_id());
+        startActivity(intent);
     }
 }

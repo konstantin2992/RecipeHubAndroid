@@ -121,7 +121,18 @@
                 android:ellipsize="end" />
         </LinearLayout>
     </LinearLayout>
-
+    <!-- Кнопка редактирования -->
+    <ImageView
+        android:id="@+id/btnEdit"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:padding="6dp"
+        android:contentDescription="Edit"
+        android:src="@drawable/ic_edit"
+        app:tint="#2196F3"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnDelete"
+        android:layout_marginEnd="8dp" />
     <!-- Кнопка удаления -->
     <ImageView
         android:id="@+id/btnDelete"
