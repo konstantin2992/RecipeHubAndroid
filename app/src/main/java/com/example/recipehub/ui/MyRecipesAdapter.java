@@ -32,13 +32,18 @@ public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView img, btnDelete;
-        TextView title, difficulty;
+        TextView title, difficulty, description, time, servings, category;
+
         public ViewHolder(View v) {
             super(v);
             img = v.findViewById(R.id.recipeImage);
             btnDelete = v.findViewById(R.id.btnDelete);
             title = v.findViewById(R.id.recipeTitle);
             difficulty = v.findViewById(R.id.recipeDifficulty);
+            description = v.findViewById(R.id.recipeDescription);
+            time = v.findViewById(R.id.recipeTime);
+            servings = v.findViewById(R.id.recipeServings);
+            category = v.findViewById(R.id.recipeCategory);
         }
     }
 
@@ -51,20 +56,35 @@ public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.View
     @Override
     public void onBindViewHolder(ViewHolder h, int pos) {
         Recipe r = recipes.get(pos);
+
         h.title.setText(r.getTitle());
-        h.difficulty.setText(r.getDifficulty());
-        Glide.with(h.img.getContext()).load(r.getImage_url()).into(h.img);
+        h.description.setText(r.getDescription());
+        h.difficulty.setText("🧩 " + r.getDifficulty());
+        h.category.setText("📂 " + (r.getCategory() != null ? r.getCategory().getCategory_name() : "—"));
+        h.time.setText("⏱ " + r.getPrep_time() + " min");
+        h.servings.setText("🍽 " + r.getServing() + " servings");
+
+        Glide.with(h.img.getContext())
+                .load(r.getImage_url())
+                .placeholder(R.drawable.ic_food_placeholder)
+                .into(h.img);
 
         h.btnDelete.setOnClickListener(v -> {
-            api.deleteRecipe("Bearer " + session.getToken(), r.getRecipe_id()).enqueue(new Callback<SimpleResponse>() {
+            int position = h.getAdapterPosition(); // берём актуальную позицию
+            if (position == RecyclerView.NO_POSITION) return;
+
+            Recipe recipe = recipes.get(position);
+
+            api.deleteRecipe("Bearer " + session.getToken(), recipe.getRecipe_id()).enqueue(new Callback<SimpleResponse>() {
                 @Override
                 public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> resp) {
                     if (resp.isSuccessful()) {
-                        recipes.remove(pos);
-                        notifyItemRemoved(pos);
-                         Toast.makeText(v.getContext(), "Deleted", Toast.LENGTH_SHORT).show();
+                        recipes.remove(position);
+                        notifyItemRemoved(position);
+                        Toast.makeText(v.getContext(), "Recipe deleted", Toast.LENGTH_SHORT).show();
                     }
                 }
+
                 @Override
                 public void onFailure(Call<SimpleResponse> call, Throwable t) {
                     Toast.makeText(v.getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();

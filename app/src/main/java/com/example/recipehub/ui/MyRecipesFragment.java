@@ -39,7 +39,7 @@ public class MyRecipesFragment extends Fragment {
         return v;
     }
 
-    private void loadRecipes() {
+    public void loadRecipes() {
         api.getMyRecipes("Bearer " + session.getToken()).enqueue(new Callback<MyRecipesResponse>() {
             @Override
             public void onResponse(Call<MyRecipesResponse> call, Response<MyRecipesResponse> response) {
@@ -48,6 +48,7 @@ public class MyRecipesFragment extends Fragment {
                     recycler.setAdapter(new MyRecipesAdapter(list, api, session));
                 } else {
                     Toast.makeText(getContext(), "No recipes yet", Toast.LENGTH_SHORT).show();
+                    recycler.setAdapter(null); // Очищаем адаптер если нет рецептов
                 }
             }
 

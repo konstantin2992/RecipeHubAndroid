@@ -1,43 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:padding="8dp"
-    android:background="@drawable/bg_card"
-    android:orientation="horizontal"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_card"
+    android:padding="8dp"
+    android:layout_margin="8dp">
 
+    <!-- Фото рецепта -->
     <ImageView
         android:id="@+id/recipeImage"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:scaleType="centerCrop"
-        android:layout_marginEnd="8dp" />
+        android:contentDescription="Recipe image"
+        android:background="@drawable/bg_card"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-    <LinearLayout
-        android:orientation="vertical"
+    <!-- Название рецепта -->
+    <TextView
+        android:id="@+id/recipeTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:text="Назва рецепту"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#000"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintStart_toEndOf="@id/recipeImage"
+        app:layout_constraintEnd_toStartOf="@id/btnDelete"
+        app:layout_constraintTop_toTopOf="@id/recipeImage" />
 
-        <TextView
-            android:id="@+id/recipeTitle"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+    <!-- Краткое описание -->
+    <TextView
+        android:id="@+id/recipeDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Короткий опис рецепту..."
+        android:textSize="14sp"
+        android:textColor="#555"
+        android:maxLines="2"
+        android:ellipsize="end"
+        app:layout_constraintStart_toStartOf="@id/recipeTitle"
+        app:layout_constraintTop_toBottomOf="@id/recipeTitle"
+        app:layout_constraintEnd_toEndOf="@id/recipeTitle"
+        android:layout_marginTop="2dp" />
 
-        <TextView
-            android:id="@+id/recipeDifficulty"
-            android:text="Difficulty"
-            android:textSize="14sp"
-            android:textColor="#555"
+    <!-- Информация: время, порции, сложность, категория -->
+    <LinearLayout
+        android:id="@+id/infoLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="@id/recipeTitle"
+        app:layout_constraintTop_toBottomOf="@id/recipeDescription"
+        app:layout_constraintEnd_toEndOf="@id/recipeTitle">
+
+        <!-- Первая строка: время и порции -->
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/recipeTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⏱ 15 min"
+                android:textSize="13sp"
+                android:textColor="#555"
+                android:layout_marginEnd="12dp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/recipeServings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🍽 4 servings"
+                android:textSize="13sp"
+                android:textColor="#555"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <!-- Вторая строка: сложность и категория -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="2dp">
+
+            <TextView
+                android:id="@+id/recipeDifficulty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🧩 medium"
+                android:textSize="13sp"
+                android:textColor="#555"
+                android:layout_marginEnd="12dp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/recipeCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🏷 Сніданки"
+                android:textSize="13sp"
+                android:textColor="#555"
+                android:singleLine="true"
+                android:maxWidth="100dp"
+                android:ellipsize="end" />
+        </LinearLayout>
     </LinearLayout>
 
+    <!-- Кнопка удаления -->
     <ImageView
         android:id="@+id/btnDelete"
-        android:src="@android:drawable/ic_menu_delete"
-        android:layout_width="32dp"
-        android:layout_height="32dp" />
-</LinearLayout>
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:padding="6dp"
+        android:contentDescription="Delete"
+        android:src="@drawable/ic_delete"
+        app:tint="#E53935"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

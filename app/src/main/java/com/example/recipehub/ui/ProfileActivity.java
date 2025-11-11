@@ -7,17 +7,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.example.recipehub.R;
 import com.example.recipehub.model.User;
 import com.example.recipehub.utils.SessionManager;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 public class ProfileActivity extends AppCompatActivity {
     private static final int EDIT_PROFILE_REQUEST = 1001;
+    private static final int CREATE_RECIPE_REQUEST = 1002;
 
     private TextView fullName, email, about;
     private ImageView avatar;
@@ -25,6 +28,8 @@ public class ProfileActivity extends AppCompatActivity {
     private SessionManager session;
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
+    private ProfilePagerAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,14 +38,7 @@ public class ProfileActivity extends AppCompatActivity {
         initializeViews();
         setupClickListeners();
         loadData();
-        tabLayout = findViewById(R.id.tabLayout);
-        viewPager = findViewById(R.id.viewPager);
-        viewPager.setAdapter(new ProfilePagerAdapter(this));
-
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            if (position == 0) tab.setText("Мої рецепти");
-            else tab.setText("Улюблені рецепти");
-        }).attach();
+        setupTabs();
     }
 
     private void initializeViews() {
@@ -50,7 +48,25 @@ public class ProfileActivity extends AppCompatActivity {
         avatar = findViewById(R.id.avatar);
         btnEdit = findViewById(R.id.btnEditProfile);
         btnLogout = findViewById(R.id.btnLogout);
+        tabLayout = findViewById(R.id.tabLayout);
+        viewPager = findViewById(R.id.viewPager);
         session = new SessionManager(this);
+    }
+
+    private void setupTabs() {
+        adapter = new ProfilePagerAdapter(this);
+        viewPager.setAdapter(adapter);
+
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            if (position == 0) tab.setText("Мої рецепти");
+            else tab.setText("Улюблені рецепти");
+        }).attach();
+
+        FloatingActionButton fabCreateRecipe = findViewById(R.id.fabCreateRecipe);
+        fabCreateRecipe.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, CreateRecipeActivity.class);
+            startActivityForResult(intent, CREATE_RECIPE_REQUEST);
+        });
     }
 
     private void setupClickListeners() {
@@ -95,7 +111,6 @@ public class ProfileActivity extends AppCompatActivity {
                     .load(avatarUrl)
                     .placeholder(R.drawable.ic_person) // изображение-заглушка
                     .error(R.drawable.ic_person) // изображение при ошибке
-
                     .into(avatar);
         } else {
             avatar.setImageResource(R.drawable.ic_person);
@@ -105,9 +120,25 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == EDIT_PROFILE_REQUEST && resultCode == RESULT_OK) {
-            // Обновляем данные профиля после редактирования
-            refreshProfileData();
+
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case EDIT_PROFILE_REQUEST:
+                    // Обновляем данные профиля после редактирования
+                    refreshProfileData();
+                    break;
+                case CREATE_RECIPE_REQUEST:
+                    // Обновляем вкладку "Мои рецепты" после создания рецепта
+                    updateMyRecipesTab();
+                    break;
+            }
+        }
+    }
+
+    private void updateMyRecipesTab() {
+        Fragment fragment = adapter.createFragment(0);
+        if (fragment instanceof MyRecipesFragment) {
+            ((MyRecipesFragment) fragment).loadRecipes();
         }
     }
 
