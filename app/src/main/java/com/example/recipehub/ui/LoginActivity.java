@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.recipehub.R;
 import com.example.recipehub.model.AuthResponse;
 import com.example.recipehub.model.LoginRequest;
@@ -42,25 +43,22 @@ public class LoginActivity extends AppCompatActivity {
         session = new SessionManager(this);
         api = RetrofitClient.getInstance().create(ApiService.class);
 
+        // Обновляем проверку - переходим на MainActivity
         if (session.isLoggedIn()) {
-            startActivity(new Intent(this, ProfileActivity.class));
+            startActivity(new Intent(this, MainActivity.class));
             finish();
             return;
         }
+
         btnGoogleLogin.setOnClickListener(v -> {
             Intent intent = new Intent(this, AuthActivity.class);
             startActivity(intent);
-
-
         });
+
         btnLogin.setOnClickListener(v -> login());
         btnToRegister.setOnClickListener(v ->
                 startActivity(new Intent(this, RegistrationActivity.class)));
-
-
     }
-
-
 
     private void login() {
         String email = etEmail.getText().toString().trim();
@@ -82,7 +80,11 @@ public class LoginActivity extends AppCompatActivity {
                     session.saveUser(user, token);
 
                     Toast.makeText(LoginActivity.this, "Успішний вхід!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
+
+                    // ОБНОВЛЕНО: Переходим на MainActivity вместо ProfileActivity
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                     finish();
                 } else {
                     Toast.makeText(LoginActivity.this, "Невірний email або пароль", Toast.LENGTH_SHORT).show();

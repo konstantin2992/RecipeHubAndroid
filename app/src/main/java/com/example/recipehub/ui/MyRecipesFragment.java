@@ -16,6 +16,7 @@ import com.example.recipehub.api.ApiService;
 import com.example.recipehub.api.RetrofitClient;
 import com.example.recipehub.model.MyRecipesResponse;
 import com.example.recipehub.model.Recipe;
+import com.example.recipehub.model.SearchRecipesResponse;
 import com.example.recipehub.utils.SessionManager;
 
 import java.util.List;
@@ -41,9 +42,9 @@ public class MyRecipesFragment extends Fragment implements MyRecipesAdapter.OnRe
     }
 
     public void loadRecipes() {
-        api.getMyRecipes("Bearer " + session.getToken()).enqueue(new Callback<MyRecipesResponse>() {
+        api.getMyRecipes("Bearer " + session.getToken()).enqueue(new Callback<SearchRecipesResponse>() {
             @Override
-            public void onResponse(Call<MyRecipesResponse> call, Response<MyRecipesResponse> response) {
+            public void onResponse(Call<SearchRecipesResponse> call, Response<SearchRecipesResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Recipe> list = response.body().getRecipes();
                     // Используем конструктор с listener
@@ -55,7 +56,7 @@ public class MyRecipesFragment extends Fragment implements MyRecipesAdapter.OnRe
             }
 
             @Override
-            public void onFailure(Call<MyRecipesResponse> call, Throwable t) {
+            public void onFailure(Call<SearchRecipesResponse> call, Throwable t) {
                 Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

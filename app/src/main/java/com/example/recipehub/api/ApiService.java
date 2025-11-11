@@ -10,12 +10,14 @@ import com.example.recipehub.model.LoginRequest;
 import com.example.recipehub.model.MyRecipesResponse;
 import com.example.recipehub.model.RecipeDetailResponse;
 import com.example.recipehub.model.RegisterRequest;
+import com.example.recipehub.model.SearchRecipesResponse;
 import com.example.recipehub.model.SimpleResponse;
 import com.example.recipehub.model.UpdateProfileRequest;
 import com.example.recipehub.model.UpdateProfileResponse;
 import com.example.recipehub.model.UserResponse;
 
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -29,6 +31,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import retrofit2.http.QueryMap;
 
 public interface ApiService {
     @POST("auth/login")
@@ -76,6 +79,9 @@ public interface ApiService {
             @Part("steps") RequestBody steps,
             @Part("ingredients") RequestBody ingredients
     );
+
+    @GET("recipes/search")
+    Call<SearchRecipesResponse> searchRecipes(@QueryMap Map<String, String> params);
     @GET("recipes/{id}")
     Call<DirectRecipeResponse> getRecipeDetails(@Path("id") int recipeId);
     @Multipart
@@ -96,7 +102,7 @@ public interface ApiService {
     );
 
     @GET("recipes/my")
-    Call<MyRecipesResponse> getMyRecipes(@Header("Authorization") String token);
+    Call<SearchRecipesResponse> getMyRecipes(@Header("Authorization") String token);
 
     @DELETE("recipes/{id}")
     Call<SimpleResponse> deleteRecipe(@Header("Authorization") String token, @Path("id") int recipeId);
@@ -106,6 +112,9 @@ public interface ApiService {
 
     @GET("favorites")
     Call<FavoritesResponse> getFavorites(@Header("Authorization") String token);
+
+    @GET("recipes/latest")
+    Call<SearchRecipesResponse> getLatestRecipes();
 
     @POST("favorites/{id}/add")
     Call<SimpleResponse> addFavorite(@Header("Authorization") String token, @Path("id") int recipeId);
