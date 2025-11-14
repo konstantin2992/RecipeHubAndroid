@@ -144,7 +144,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
         findViewById(R.id.btnAddIngredient).setOnClickListener(v -> addIngredientField());
         findViewById(R.id.btnAddStep).setOnClickListener(v -> addStepField());
         btnCreateRecipe.setOnClickListener(v -> createRecipe());
-
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         addIngredientField();
         addStepField();
     }

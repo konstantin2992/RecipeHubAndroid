@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="16dp"
     android:background="#FFF"
     android:fitsSystemWindows="true">
@@ -10,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="24dp">
+        android:paddingTop="8dp">
 
         <!-- Заголовок -->
         <TextView
@@ -20,21 +21,23 @@
             android:textSize="24sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="16dp"
             android:textColor="#333" />
 
         <!-- Поиск по названию -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+            android:layout_marginBottom="12dp"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:paddingHorizontal="8dp">
 
             <EditText
                 android:id="@+id/etSearch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Пошук рецептів" />
+                android:hint="Пошук рецептів"
+                android:paddingHorizontal="8dp"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -45,14 +48,16 @@
             android:text="Фільтри"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="12dp"
+            android:paddingHorizontal="8dp"/>
 
         <!-- Ингредиенты -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:paddingHorizontal="8dp">
 
             <EditText
                 android:id="@+id/etIngredients"
@@ -68,7 +73,8 @@
             android:layout_height="wrap_content"
             android:text="Час приготування"
             android:textSize="14sp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            android:paddingHorizontal="8dp"/>
 
         <SeekBar
             android:id="@+id/seekBarPrepTime"
@@ -76,7 +82,8 @@
             android:layout_height="wrap_content"
             android:max="180"
             android:progress="60"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            android:paddingHorizontal="8dp"/>
 
         <TextView
             android:id="@+id/tvMaxPrepTime"
@@ -93,13 +100,15 @@
             android:layout_height="wrap_content"
             android:text="Складність"
             android:textSize="14sp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            android:paddingHorizontal="8dp"/>
 
         <Spinner
             android:id="@+id/spinnerDifficulty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            android:paddingHorizontal="8dp"/>
 
         <!-- Категория -->
         <TextView
@@ -107,20 +116,23 @@
             android:layout_height="wrap_content"
             android:text="Категорія"
             android:textSize="14sp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            android:paddingHorizontal="8dp"/>
 
         <Spinner
             android:id="@+id/spinnerCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="24dp"
+            android:paddingHorizontal="8dp"/>
 
         <!-- Кнопки -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="24dp">
+            android:layout_marginBottom="24dp"
+            android:paddingHorizontal="8dp">
 
             <Button
                 android:id="@+id/btnReset"
@@ -151,7 +163,38 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:visibility="gone" />
+        <LinearLayout
+            android:id="@+id/emptyState"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp">
 
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@android:drawable/ic_menu_search"
+                app:tint="#CCCCCC"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Рецептів не знайдено"
+                android:textSize="16sp"
+                android:textColor="#666666"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Спробуйте змінити параметри пошуку"
+                android:textSize="14sp"
+                android:textColor="#999999" />
+
+        </LinearLayout>
         <!-- Список рецептов -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerRecipes"

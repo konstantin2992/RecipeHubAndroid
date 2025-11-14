@@ -1,5 +1,6 @@
 package com.example.recipehub.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,6 +31,7 @@ import com.example.recipehub.model.Category;
 import com.example.recipehub.model.CategoryResponse;
 import com.example.recipehub.model.Recipe;
 import com.example.recipehub.model.SearchRecipesResponse;
+import com.example.recipehub.utils.SafeToast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ public class SearchRecipesFragment extends Fragment {
     private SeekBar seekBarPrepTime;
     private Button btnSearch, btnReset;
     private ApiService api;
-
+    private View emptyState;
     private List<Recipe> recipes = new ArrayList<>();
     private List<Category> categories = new ArrayList<>();
     private SearchAdapter adapter;
@@ -82,7 +84,7 @@ public class SearchRecipesFragment extends Fragment {
         seekBarPrepTime = view.findViewById(R.id.seekBarPrepTime);
         btnSearch = view.findViewById(R.id.btnSearch);
         btnReset = view.findViewById(R.id.btnReset);
-
+        emptyState = view.findViewById(R.id.emptyState);
         recyclerRecipes.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new SearchAdapter(recipes, this::onRecipeClick);
         recyclerRecipes.setAdapter(adapter);
@@ -218,6 +220,9 @@ public class SearchRecipesFragment extends Fragment {
             public void onResponse(Call<SearchRecipesResponse> call, Response<SearchRecipesResponse> response) {
                 showLoading(false);
 
+                // Добавьте проверку
+                if (!isAdded() || getContext() == null) return;
+
                 if (response.isSuccessful() && response.body() != null) {
                     List<Recipe> newRecipes = response.body().getRecipes();
 
@@ -225,23 +230,28 @@ public class SearchRecipesFragment extends Fragment {
                     if (newRecipes != null && !newRecipes.isEmpty()) {
                         recipes.addAll(newRecipes);
                         adapter.notifyDataSetChanged();
+                        showEmptyState(false); // ДОБАВЬТЕ false - скрыть пустое состояние
 
-                        Toast.makeText(getContext(), "Найдено: " + recipes.size() + " рецептов (" + searchType + ")", Toast.LENGTH_SHORT).show();
+                        SafeToast.show(getContext(), "Найдено: " + recipes.size() + " рецептов (" + searchType + ")");
                     } else {
-                        showEmptyState();
-                        Toast.makeText(getContext(), "Рецепты не найдены", Toast.LENGTH_SHORT).show();
+                        showEmptyState(true); // ДОБАВЬТЕ true - показать пустое состояние
+                        SafeToast.show(getContext(), "Рецепты не найдены");
                     }
                 } else {
-                    showEmptyState();
-                    Toast.makeText(getContext(), "Ошибка поиска", Toast.LENGTH_SHORT).show();
+                    showEmptyState(true); // ДОБАВЬТЕ true - показать пустое состояние
+                    SafeToast.show(getContext(), "Ошибка поиска");
                 }
             }
 
             @Override
             public void onFailure(Call<SearchRecipesResponse> call, Throwable t) {
                 showLoading(false);
-                showEmptyState();
-                Toast.makeText(getContext(), "Ошибка сети: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+
+                // Добавьте проверку
+                if (!isAdded() || getContext() == null) return;
+
+                showEmptyState(true); // ДОБАВЬТЕ true - показать пустое состояние
+                SafeToast.show(getContext(), "Ошибка сети: " + t.getMessage());
             }
         });
     }
@@ -254,24 +264,32 @@ public class SearchRecipesFragment extends Fragment {
             public void onResponse(Call<SearchRecipesResponse> call, Response<SearchRecipesResponse> response) {
                 showLoading(false);
 
+                // Добавьте проверку
+                if (!isAdded() || getContext() == null) return;
+
                 if (response.isSuccessful() && response.body() != null) {
                     List<Recipe> newRecipes = response.body().getRecipes();
                     recipes.clear();
                     if (newRecipes != null && !newRecipes.isEmpty()) {
                         recipes.addAll(newRecipes);
                         adapter.notifyDataSetChanged();
+                        showEmptyState(false); // ДОБАВЬТЕ false - скрыть пустое состояние
                     } else {
-                        showEmptyState();
+                        showEmptyState(true); // ДОБАВЬТЕ true - показать пустое состояние
                     }
                 } else {
-                    showEmptyState();
+                    showEmptyState(true); // ДОБАВЬТЕ true - показать пустое состояние
                 }
             }
 
             @Override
             public void onFailure(Call<SearchRecipesResponse> call, Throwable t) {
                 showLoading(false);
-                showEmptyState();
+
+                // Добавьте проверку
+                if (!isAdded() || getContext() == null) return;
+
+                showEmptyState(true); // ДОБАВЬТЕ true - показать пустое состояние
             }
         });
     }
@@ -302,9 +320,25 @@ public class SearchRecipesFragment extends Fragment {
         recyclerRecipes.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
-    private void showEmptyState() {
-        // Можно добавить TextView для пустого состояния
-        Toast.makeText(getContext(), "Рецептов не найдено", Toast.LENGTH_SHORT).show();
+    private void showEmptyState(boolean show) {
+        if (!isAdded() || getContext() == null) {
+            // Фрагмент не присоединен к активности, выходим
+            return;
+        }
+
+        if (show) {
+            emptyState.setVisibility(View.VISIBLE);
+            recyclerRecipes.setVisibility(View.GONE);
+
+            // Проверяем context перед показом Toast
+            Context context = getContext();
+            if (context != null) {
+                Toast.makeText(context, "Рецептів не знайдено", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            emptyState.setVisibility(View.GONE);
+            recyclerRecipes.setVisibility(View.VISIBLE);
+        }
     }
 
     private void onRecipeClick(Recipe recipe) {

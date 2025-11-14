@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA">
+    android:background="#FAFAFA"
+    android:fitsSystemWindows="true">
 
     <!-- Верхняя панель -->
     <LinearLayout
@@ -15,7 +16,8 @@
         android:background="#FFFFFF"
         android:paddingHorizontal="16dp"
         android:gravity="center_vertical"
-        android:elevation="3dp">
+        android:elevation="3dp"
+        android:paddingTop="8dp">
 
         <ImageButton
             android:id="@+id/btnBack"
@@ -248,14 +250,15 @@
                 android:orientation="vertical"
                 android:layout_marginTop="8dp"/>
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/btnAddIngredient"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="+ Додати інгредієнт"
                 android:textColor="#2196F3"
                 app:cornerRadius="8dp"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:background="@android:color/transparent"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
                 android:layout_marginTop="4dp"/>
 
             <!-- Кроки -->
