@@ -1,259 +1,303 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#FAFAFA">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
+    <!-- Верхняя панель -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:title="Створення рецепту"
-        app:titleTextColor="@android:color/white"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        android:elevation="4dp" />
-    <!-- ScrollView для прокручиваемого содержимого -->
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:paddingHorizontal="16dp"
+        android:gravity="center_vertical"
+        android:elevation="3dp">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="#5C5C5C" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Створення рецепту"
+            android:textSize="18sp"
+            android:textColor="#3B3B3B"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <ImageButton
+            android:id="@+id/btnLogout"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_logout"
+            app:tint="#5C5C5C"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+    </LinearLayout>
+
+    <!-- Основний контент -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:padding="16dp"
-        android:fillViewport="true">
+        android:padding="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Заголовок -->
+            <!-- Блок загрузки фото -->
+            <LinearLayout
+                android:id="@+id/btnPickMainImage"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:gravity="center"
+                android:background="@drawable/bg_upload_box"
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:id="@+id/ivMainImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/ic_add_image"
+                    app:tint="#B0B0B0" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:text="Завантажити фото"
+                    android:textColor="#808080"
+                    android:textSize="15sp"/>
+            </LinearLayout>
+
+            <!-- Назва -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp">
+                android:layout_marginTop="24dp"
+                android:hint="Назва рецепту"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="#D7D7D7"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusBottomEnd="10dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Назва рецепту"
+                    android:textColor="#333333"
                     android:textSize="16sp" />
-
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Описание -->
+            <!-- Опис -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp">
+                android:layout_marginTop="12dp"
+                android:hint="Короткий опис"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="#D7D7D7"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusBottomEnd="10dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etDescription"
                     android:layout_width="match_parent"
                     android:layout_height="120dp"
                     android:gravity="top"
-                    android:hint="Опис рецепту"
                     android:inputType="textMultiLine"
-                    android:textSize="16sp" />
-
+                    android:textColor="#333333"
+                    android:textSize="15sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Основное изображение -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Головне зображення"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
-
+            <!-- Складність + Категорія -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:layout_marginTop="16dp">
 
-                <ImageView
-                    android:id="@+id/ivMainImage"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:scaleType="centerCrop"
-                    android:background="@drawable/bg_card"
-                    android:src="@drawable/ic_add_image"
-                    android:layout_marginEnd="16dp" />
-
-                <Button
-                    android:id="@+id/btnPickMainImage"
-                    android:layout_width="wrap_content"
+                <!-- Складність -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Обрати фото"
-                    android:backgroundTint="#FFA726"
-                    android:textColor="@android:color/white" />
+                    android:layout_weight="1"
+                    android:hint="Складність"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxBackgroundColor="#FFFFFF"
+                    app:boxStrokeColor="#D7D7D7"
+                    app:endIconMode="dropdown_menu">
 
+                    <AutoCompleteTextView
+                        android:id="@+id/actvDifficulty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#333333"
+                        android:textSize="15sp"
+                        android:background="@null" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Space
+                    android:layout_width="12dp"
+                    android:layout_height="match_parent" />
+
+                <!-- Категорія -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Категорія"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxBackgroundColor="#FFFFFF"
+                    app:boxStrokeColor="#D7D7D7"
+                    app:endIconMode="dropdown_menu">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/actvCategory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#333333"
+                        android:textSize="15sp"
+                        android:background="@null" />
+                </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
-            <!-- Категория -->
-            <com.google.android.material.textfield.TextInputLayout
+            <!-- Порції + Час -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp">
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
 
-                <Spinner
-                    android:id="@+id/spinnerCategory"
-                    android:layout_width="match_parent"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="Категорія" />
+                    android:layout_weight="1"
+                    android:hint="Порцій"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxStrokeColor="#D7D7D7"
+                    app:boxBackgroundColor="#FFFFFF">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etServing"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:textColor="#333333"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Сложность -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp">
+                <Space
+                    android:layout_width="12dp"
+                    android:layout_height="match_parent" />
 
-                <AutoCompleteTextView
-                    android:id="@+id/actvDifficulty"
-                    android:layout_width="match_parent"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="Складність"
-                    android:textSize="16sp" />
+                    android:layout_weight="1"
+                    android:hint="Час приготування"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxStrokeColor="#D7D7D7"
+                    app:boxBackgroundColor="#FFFFFF">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPrepTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:textColor="#333333"/>
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
 
-            <!-- Время приготовления -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPrepTime"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Час приготування (хвилини)"
-                    android:inputType="number"
-                    android:textSize="16sp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Количество порций -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etServing"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Кількість порцій"
-                    android:inputType="number"
-                    android:textSize="16sp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Ингредиенты -->
+            <!-- Інгредієнти -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Інгредієнти"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:textColor="#3B3B3B"
+                android:layout_marginTop="24dp"/>
 
             <LinearLayout
                 android:id="@+id/ingredientsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginTop="8dp"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAddIngredient"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="+ Додати інгредієнт"
-                android:backgroundTint="#4CAF50"
-                android:textColor="@android:color/white"
-                android:layout_marginBottom="24dp" />
+                android:textColor="#2196F3"
+                app:cornerRadius="8dp"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_marginTop="4dp"/>
 
-            <!-- Шаги приготовления -->
+            <!-- Кроки -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Кроки приготування"
+                android:text="Інструкція"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:textColor="#3B3B3B"
+                android:layout_marginTop="24dp"/>
 
             <LinearLayout
                 android:id="@+id/stepsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginTop="8dp"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAddStep"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="+ Додати крок"
-                android:backgroundTint="#4CAF50"
-                android:textColor="@android:color/white"
-                android:layout_marginBottom="32dp" />
+                android:textColor="#2196F3"
+                app:cornerRadius="8dp"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_marginTop="4dp"/>
 
+            <!-- Кнопка публікації -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCreateRecipe"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="ОПУБЛІКУВАТИ"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="10dp"
+                app:backgroundTint="#FF9B2D"
+                android:textStyle="bold"
+                android:layout_marginTop="28dp"
+                android:elevation="2dp"/>
         </LinearLayout>
     </ScrollView>
-
-    <!-- Закрепленная кнопка внизу -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:background="@android:color/white"
-        android:elevation="8dp">
-
-        <Button
-            android:id="@+id/btnCreateRecipe"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Створити рецепт"
-            android:textSize="18sp"
-            android:backgroundTint="#FFA726"
-            android:textColor="@android:color/white" />
-
-    </LinearLayout>
 
 </LinearLayout>

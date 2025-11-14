@@ -6,8 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.recipehub.R;
@@ -15,6 +18,8 @@ import com.example.recipehub.api.ApiService;
 import com.example.recipehub.model.Recipe;
 import com.example.recipehub.utils.SessionManager;
 import com.example.recipehub.model.SimpleResponse;
+
+import java.io.IOException;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,6 +30,7 @@ public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.View
     private ApiService api;
     private SessionManager session;
     private OnRecipeClickListener listener;
+    private Context context;
 
     public interface OnRecipeClickListener {
         void onRecipeClick(Recipe recipe);
@@ -48,6 +54,7 @@ public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.View
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView img, btnDelete, btnEdit;
         TextView title, difficulty, description, time, servings, category;
+        ProgressBar progressBar; // Добавляем ProgressBar для индикации загрузки
 
         public ViewHolder(View v) {
             super(v);
@@ -60,12 +67,14 @@ public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.View
             time = v.findViewById(R.id.recipeTime);
             servings = v.findViewById(R.id.recipeServings);
             category = v.findViewById(R.id.recipeCategory);
+            progressBar = v.findViewById(R.id.progressBar); // Добавьте ProgressBar в layout
         }
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_my_recipe, parent, false);
+        context = parent.getContext(); // Сохраняем контекст
         return new ViewHolder(v);
     }
 
@@ -84,6 +93,10 @@ public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.View
                 .load(r.getImage_url())
                 .placeholder(R.drawable.ic_food_placeholder)
                 .into(h.img);
+
+        // Сбрасываем видимость прогресса
+        h.progressBar.setVisibility(View.GONE);
+        h.btnDelete.setVisibility(View.VISIBLE);
 
         // Клик на всю карточку для просмотра
         h.itemView.setOnClickListener(v -> {
@@ -107,26 +120,54 @@ public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.View
 
         // Кнопка удаления
         h.btnDelete.setOnClickListener(v -> {
-            int position = h.getAdapterPosition();
-            if (position == RecyclerView.NO_POSITION) return;
+            showDeleteConfirmationDialog(h, r, pos);
+        });
+    }
 
-            Recipe recipe = recipes.get(position);
+    private void showDeleteConfirmationDialog(ViewHolder holder, Recipe recipe, int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Видалення рецепту")
+                .setMessage("Ви впевнені, що хочете видалити рецепт \"" + recipe.getTitle() + "\"?")
+                .setPositiveButton("Видалити", (dialog, which) -> {
+                    deleteRecipe(holder, recipe, position);
+                })
+                .setNegativeButton("Скасувати", (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .setCancelable(true)
+                .show();
+    }
 
-            api.deleteRecipe("Bearer " + session.getToken(), recipe.getRecipe_id()).enqueue(new Callback<SimpleResponse>() {
-                @Override
-                public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> resp) {
-                    if (resp.isSuccessful()) {
-                        recipes.remove(position);
-                        notifyItemRemoved(position);
-                        Toast.makeText(v.getContext(), "Recipe deleted", Toast.LENGTH_SHORT).show();
+    private void deleteRecipe(ViewHolder holder, Recipe recipe, int position) {
+        holder.progressBar.setVisibility(View.VISIBLE);
+        holder.btnDelete.setVisibility(View.GONE);
+
+        api.deleteRecipe("Bearer " + session.getToken(), recipe.getRecipe_id()).enqueue(new Callback<SimpleResponse>() {
+            @Override
+            public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> resp) {
+                holder.progressBar.setVisibility(View.GONE);
+                holder.btnDelete.setVisibility(View.VISIBLE);
+
+                // ПРОСТО СЧИТАЕМ ЛЮБОЙ УСПЕШНЫЙ ОТВЕТ УСПЕХОМ
+                if (resp.isSuccessful()) {
+                    recipes.remove(position);
+                    notifyItemRemoved(position);
+                    Toast.makeText(context, "✅ Рецепт успішно видалено", Toast.LENGTH_SHORT).show();
+
+                    if (position < recipes.size()) {
+                        notifyItemRangeChanged(position, recipes.size() - position);
                     }
+                } else {
+                    Toast.makeText(context, "❌ Помилка видалення", Toast.LENGTH_SHORT).show();
                 }
+            }
 
-                @Override
-                public void onFailure(Call<SimpleResponse> call, Throwable t) {
-                    Toast.makeText(v.getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+            @Override
+            public void onFailure(Call<SimpleResponse> call, Throwable t) {
+                holder.progressBar.setVisibility(View.GONE);
+                holder.btnDelete.setVisibility(View.VISIBLE);
+                Toast.makeText(context, "❌ Помилка мережі", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
