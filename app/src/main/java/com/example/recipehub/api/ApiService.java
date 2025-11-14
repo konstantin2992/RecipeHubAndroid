@@ -101,6 +101,27 @@ public interface ApiService {
             @Part("ingredients") RequestBody ingredientsJson
     );
 
+    @GET("/api/favorites")
+    Call<FavoritesResponse> getFavorites(@Header("Authorization") String token);
+
+    @POST("/api/favorites/{recipeId}/add")
+    Call<SimpleResponse> addToFavorites(
+            @Header("Authorization") String token,
+            @Path("recipeId") int recipeId
+    );
+
+    @DELETE("/api/favorites/{recipeId}/delete")
+    Call<SimpleResponse> removeFromFavorites(
+            @Header("Authorization") String token,
+            @Path("recipeId") int recipeId
+    );
+
+    // Метод для проверки избранного - будем использовать getFavorites и фильтровать
+    @GET("/api/favorites")
+    Call<FavoritesResponse> checkIfFavorite(
+            @Header("Authorization") String token
+    );
+
     @GET("recipes/my")
     Call<SearchRecipesResponse> getMyRecipes(@Header("Authorization") String token);
 
@@ -110,8 +131,7 @@ public interface ApiService {
     @GET("recipes/{id}")
     Call<RecipeDetailResponse> getRecipeById(@Header("Authorization") String token, @Path("id") int recipeId);
 
-    @GET("favorites")
-    Call<FavoritesResponse> getFavorites(@Header("Authorization") String token);
+
 
     @GET("recipes/latest")
     Call<SearchRecipesResponse> getLatestRecipes();

@@ -90,7 +90,7 @@ public class SearchRecipesFragment extends Fragment {
 
     private void setupAdapters() {
         // Адаптер сложности
-        String[] difficulties = {"Любая", "легко", "середньо", "складно"};
+        String[] difficulties = {"Any", "Easy", "Normal", "Hard"};
         ArrayAdapter<String> difficultyAdapter = new ArrayAdapter<>(
                 getContext(), android.R.layout.simple_spinner_item, difficulties);
         difficultyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

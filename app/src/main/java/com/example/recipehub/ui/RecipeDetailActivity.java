@@ -1,14 +1,18 @@
 package com.example.recipehub.ui;
 
+import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,10 +22,13 @@ import com.example.recipehub.api.ApiService;
 import com.example.recipehub.api.RetrofitClient;
 import com.example.recipehub.model.Category;
 import com.example.recipehub.model.DirectRecipeResponse;
+import com.example.recipehub.model.FavoritesResponse;
 import com.example.recipehub.model.Ingredient;
 import com.example.recipehub.model.Recipe;
 import com.example.recipehub.model.RecipeDetailResponse;
+import com.example.recipehub.model.SimpleResponse;
 import com.example.recipehub.model.Step;
+import com.example.recipehub.utils.SessionManager;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -37,7 +44,11 @@ public class RecipeDetailActivity extends AppCompatActivity {
     private RecyclerView rvIngredients, rvSteps;
     private ImageView ivRecipeImage;
     private ImageButton btnBack;
+    private Button btnFavorite;
     private ApiService api;
+    private SessionManager session;
+    private int recipeId;
+    private boolean isFavorite = false;
     private static final String TAG = "RecipeDetailActivity";
 
     @Override
@@ -47,12 +58,14 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
         initViews();
         api = RetrofitClient.getInstance().create(ApiService.class);
+        session = new SessionManager(this);
 
-        int recipeId = getIntent().getIntExtra("recipe_id", -1);
+        recipeId = getIntent().getIntExtra("recipe_id", -1);
         Log.d(TAG, "Received recipe_id: " + recipeId);
 
         if (recipeId != -1) {
             loadRecipeDetails(recipeId);
+            checkFavoriteStatus(); // Добавьте этот вызов
         } else {
             Toast.makeText(this, "Recipe ID not found", Toast.LENGTH_SHORT).show();
             finish();
@@ -70,11 +83,13 @@ public class RecipeDetailActivity extends AppCompatActivity {
         rvIngredients = findViewById(R.id.rvIngredients);
         rvSteps = findViewById(R.id.rvSteps);
         btnBack = findViewById(R.id.btnBack);
+        btnFavorite = findViewById(R.id.btnFavorite); // Добавьте эту строку
 
         rvIngredients.setLayoutManager(new LinearLayoutManager(this));
         rvSteps.setLayoutManager(new LinearLayoutManager(this));
 
         btnBack.setOnClickListener(v -> finish());
+        btnFavorite.setOnClickListener(v -> toggleFavorite()); // Добавьте обработчик
     }
 
     private void loadRecipeDetails(int recipeId) {
@@ -174,6 +189,132 @@ public class RecipeDetailActivity extends AppCompatActivity {
         } else {
             rvSteps.setAdapter(new StepsAdapter(new ArrayList<>()));
         }
+    }
+
+    // === ДОБАВЬТЕ ЭТИ МЕТОДЫ СЮДА ===
+
+    private void checkFavoriteStatus() {
+        if (!session.isLoggedIn()) {
+            updateFavoriteButton(false);
+            return;
+        }
+
+        api.getFavorites("Bearer " + session.getToken()).enqueue(new Callback<FavoritesResponse>() {
+            @Override
+            public void onResponse(Call<FavoritesResponse> call, Response<FavoritesResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Recipe> favorites = response.body().getFavoriteRecipes();
+                    boolean isFavoriteResult = false;
+
+                    for (Recipe favorite : favorites) {
+                        if (favorite.getRecipe_id() == recipeId) {
+                            isFavoriteResult = true;
+                            break;
+                        }
+                    }
+
+                    isFavorite = isFavoriteResult;
+                    updateFavoriteButton(isFavorite);
+                } else {
+                    updateFavoriteButton(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FavoritesResponse> call, Throwable t) {
+                Log.e(TAG, "Error checking favorite status: " + t.getMessage());
+                updateFavoriteButton(false);
+            }
+        });
+    }
+
+    private void toggleFavorite() {
+        if (!session.isLoggedIn()) {
+            Toast.makeText(this, "Будь ласка, увійдіть в систему", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (isFavorite) {
+            removeFromFavorites();
+        } else {
+            addToFavorites();
+        }
+    }
+
+    private void addToFavorites() {
+        api.addToFavorites("Bearer " + session.getToken(), recipeId)
+                .enqueue(new Callback<SimpleResponse>() {
+                    @Override
+                    public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            isFavorite = true;
+                            updateFavoriteButton(true);
+                            Toast.makeText(RecipeDetailActivity.this, "Додано в улюблене", Toast.LENGTH_SHORT).show();
+                            sendFavoriteUpdateBroadcast();
+                        } else {
+                            try {
+                                String errorBody = response.errorBody().string();
+                                Toast.makeText(RecipeDetailActivity.this, "Помилка: " + errorBody, Toast.LENGTH_SHORT).show();
+                                Log.e(TAG, "Add favorite error: " + errorBody);
+                            } catch (IOException e) {
+                                Toast.makeText(RecipeDetailActivity.this, "Помилка додавання", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SimpleResponse> call, Throwable t) {
+                        Toast.makeText(RecipeDetailActivity.this, "Помилка мережі: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Add favorite network error: " + t.getMessage());
+                    }
+                });
+    }
+
+    private void removeFromFavorites() {
+        api.removeFromFavorites("Bearer " + session.getToken(), recipeId)
+                .enqueue(new Callback<SimpleResponse>() {
+                    @Override
+                    public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            isFavorite = false;
+                            updateFavoriteButton(false);
+                            Toast.makeText(RecipeDetailActivity.this, "Видалено з улюблених", Toast.LENGTH_SHORT).show();
+                            sendFavoriteUpdateBroadcast();
+                        } else {
+                            try {
+                                String errorBody = response.errorBody().string();
+                                Toast.makeText(RecipeDetailActivity.this, "Помилка: " + errorBody, Toast.LENGTH_SHORT).show();
+                                Log.e(TAG, "Remove favorite error: " + errorBody);
+                            } catch (IOException e) {
+                                Toast.makeText(RecipeDetailActivity.this, "Помилка видалення", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SimpleResponse> call, Throwable t) {
+                        Toast.makeText(RecipeDetailActivity.this, "Помилка мережі: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Remove favorite network error: " + t.getMessage());
+                    }
+                });
+    }
+
+    private void updateFavoriteButton(boolean isFavorite) {
+        if (isFavorite) {
+            btnFavorite.setText("Видалити з улюблених");
+            btnFavorite.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
+            btnFavorite.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.red)));
+        } else {
+            btnFavorite.setText("Додати в улюблене");
+            btnFavorite.setBackgroundColor(ContextCompat.getColor(this, R.color.green));
+            btnFavorite.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.green)));
+        }
+        btnFavorite.setTextColor(ContextCompat.getColor(this, R.color.white));
+    }
+
+    private void sendFavoriteUpdateBroadcast() {
+        Intent intent = new Intent("com.example.recipehub.FAVORITES_UPDATED");
+        sendBroadcast(intent);
     }
 
     private void showError(String message) {

@@ -46,11 +46,15 @@ public class CreateRecipeActivity extends AppCompatActivity {
     private static final int PICK_STEP_IMAGE = 2;
 
     protected EditText etTitle, etDescription, etPrepTime, etServing;
-    protected Spinner spinnerCategory;
+
     protected AutoCompleteTextView actvDifficulty;
     protected ImageView ivMainImage;
     protected LinearLayout ingredientsContainer, stepsContainer;
     protected Button btnCreateRecipe;
+    protected AutoCompleteTextView actvCategory;
+
+    protected int selectedCategoryId = -1;
+
 
     protected ApiService api;
     protected SessionManager session;
@@ -59,7 +63,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
     protected Map<Integer, Uri> stepImages = new HashMap<>();
     protected int currentStepForImage = -1;
 
-    protected final String[] difficultyLevels = {"легко", "середньо", "складно"};
+    protected final String[] difficultyLevels = {"Any", "easy", "medium", "hard"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +79,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         loadCategories();
     }
+
     protected CreateRecipeRequest prepareRecipeRequest() {
         String title = etTitle.getText().toString().trim();
         String description = etDescription.getText().toString().trim();
@@ -110,17 +115,19 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         return new CreateRecipeRequest(selectedCategoryId, title, description, difficulty, prepTime, serving, steps, ingredients);
     }
+
     protected void initializeViews() {
         etTitle = findViewById(R.id.etTitle);
         etDescription = findViewById(R.id.etDescription);
         etPrepTime = findViewById(R.id.etPrepTime);
         etServing = findViewById(R.id.etServing);
-        spinnerCategory = findViewById(R.id.spinnerCategory);
+        actvCategory = findViewById(R.id.actvCategory);
         actvDifficulty = findViewById(R.id.actvDifficulty);
         ivMainImage = findViewById(R.id.ivMainImage);
         ingredientsContainer = findViewById(R.id.ingredientsContainer);
         stepsContainer = findViewById(R.id.stepsContainer);
         btnCreateRecipe = findViewById(R.id.btnCreateRecipe);
+
     }
 
     protected void setupAdapters() {
@@ -129,7 +136,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         ArrayAdapter<String> tempCategoryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, new ArrayList<>());
         tempCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCategory.setAdapter(tempCategoryAdapter);
+        actvCategory.setAdapter(tempCategoryAdapter);
     }
 
     protected void setupClickListeners() {
@@ -142,7 +149,6 @@ public class CreateRecipeActivity extends AppCompatActivity {
         addStepField();
     }
 
-    protected int selectedCategoryId = -1;
 
     protected void loadCategories() {
         api.getCategories().enqueue(new Callback<CategoryResponse>() {
@@ -156,7 +162,9 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
                     ArrayAdapter<String> categoryAdapter = new ArrayAdapter<String>(CreateRecipeActivity.this, android.R.layout.simple_spinner_item, categoryNames) {
                         @Override
-                        public boolean isEnabled(int position) { return position != 0; }
+                        public boolean isEnabled(int position) {
+                            return position != 0;
+                        }
 
                         @Override
                         public View getDropDownView(int position, View convertView, ViewGroup parent) {
@@ -167,20 +175,22 @@ public class CreateRecipeActivity extends AppCompatActivity {
                         }
                     };
                     categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerCategory.setAdapter(categoryAdapter);
+                    actvCategory.setAdapter(categoryAdapter);
 
-                    spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            if (position > 0) selectedCategoryId = categories.get(position - 1).getCategory_id();
+                    actvCategory.setOnItemClickListener((parent, view, position, id) -> {
+                        if (position > 0) {
+                            selectedCategoryId = categories.get(position - 1).getCategory_id();
+                        } else {
+                            selectedCategoryId = -1;
                         }
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {}
                     });
                 } else setupDefaultCategories();
             }
+
             @Override
-            public void onFailure(Call<CategoryResponse> call, Throwable t) { setupDefaultCategories(); }
+            public void onFailure(Call<CategoryResponse> call, Throwable t) {
+                setupDefaultCategories();
+            }
         });
     }
 
@@ -190,7 +200,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         ArrayAdapter<String> defaultAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, defaultCategories);
         defaultAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCategory.setAdapter(defaultAdapter);
+        actvCategory.setAdapter(defaultAdapter);
 
         categories.clear();
         for (int i = 1; i < defaultCategories.length; i++) {
@@ -278,7 +288,8 @@ public class CreateRecipeActivity extends AppCompatActivity {
             String name = etName.getText().toString().trim();
             String quantity = etQuantity.getText().toString().trim();
             String unit = etUnit.getText().toString().trim();
-            if (!name.isEmpty() && !quantity.isEmpty() && !unit.isEmpty()) ingredients.add(new Ingredient(name, quantity, unit));
+            if (!name.isEmpty() && !quantity.isEmpty() && !unit.isEmpty())
+                ingredients.add(new Ingredient(name, quantity, unit));
         }
 
         List<Step> steps = new ArrayList<>();
@@ -351,7 +362,8 @@ public class CreateRecipeActivity extends AppCompatActivity {
                         if (response.errorBody() != null) {
                             String errorBody = response.errorBody().string();
                             JsonObject errorJson = new Gson().fromJson(errorBody, JsonObject.class);
-                            if (errorJson.has("message")) errorMessage += errorJson.get("message").getAsString();
+                            if (errorJson.has("message"))
+                                errorMessage += errorJson.get("message").getAsString();
                             else errorMessage += errorBody;
                         } else errorMessage += response.message();
                     } catch (IOException e) {
@@ -385,7 +397,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
     }
 
     protected String getRealPathFromURI(Uri contentUri) {
-        String[] proj = { MediaStore.Images.Media.DATA };
+        String[] proj = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
         if (cursor != null) {
             int colIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
@@ -403,13 +415,42 @@ public class CreateRecipeActivity extends AppCompatActivity {
     }
 
     protected boolean validateForm() {
-        if (TextUtils.isEmpty(etTitle.getText())) { etTitle.setError("Введіть назву рецепту"); return false; }
-        if (TextUtils.isEmpty(etDescription.getText())) { etDescription.setError("Введіть опис рецепту"); return false; }
-        if (spinnerCategory.getSelectedItemPosition() == 0) { Toast.makeText(this, "Оберіть категорію", Toast.LENGTH_SHORT).show(); return false; }
-        if (TextUtils.isEmpty(actvDifficulty.getText())) { actvDifficulty.setError("Оберіть складність"); return false; }
-        if (TextUtils.isEmpty(etPrepTime.getText())) { etPrepTime.setError("Введіть час приготування"); return false; }
-        if (TextUtils.isEmpty(etServing.getText())) { etServing.setError("Введіть кількість порцій"); return false; }
-        if (mainImageUri == null) { Toast.makeText(this, "Додайте головне зображення", Toast.LENGTH_SHORT).show(); return false; }
+        if (TextUtils.isEmpty(etTitle.getText())) {
+            etTitle.setError("Введіть назву рецепту");
+            return false;
+        }
+        if (TextUtils.isEmpty(etDescription.getText())) {
+            etDescription.setError("Введіть опис рецепту");
+            return false;
+        }
+        if (selectedCategoryId == -1 &&
+                (!(this instanceof EditRecipeActivity) ||
+                        ((EditRecipeActivity) this).currentRecipe.getCategory() == null)) {
+            Toast.makeText(this, "Оберіть категорію", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (TextUtils.isEmpty(actvDifficulty.getText())) {
+            actvDifficulty.setError("Оберіть складність");
+            return false;
+        }
+        if (TextUtils.isEmpty(etPrepTime.getText())) {
+            etPrepTime.setError("Введіть час приготування");
+            return false;
+        }
+        if (TextUtils.isEmpty(etServing.getText())) {
+            etServing.setError("Введіть кількість порцій");
+            return false;
+        }
+        if (mainImageUri == null &&
+                (!(this instanceof EditRecipeActivity) ||
+                        ((EditRecipeActivity) this).currentRecipe.getImage_url() == null ||
+                        ((EditRecipeActivity) this).currentRecipe.getImage_url().isEmpty())) {
+            Toast.makeText(this, "Додайте головне зображення", Toast.LENGTH_SHORT).show();
+            return false;
+
+
+        }
+
         return true;
     }
 }

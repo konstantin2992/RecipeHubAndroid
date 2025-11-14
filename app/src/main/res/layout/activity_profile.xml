@@ -4,8 +4,14 @@
     android:orientation="vertical"
     android:background="#FAFAFA"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+    <View
+        android:id="@+id/statusBarBackground"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0"
+        android:background="#FAFAFA" />
     <!-- Верхний блок с аватаром и инфо -->
     <ScrollView
         android:layout_width="match_parent"
@@ -109,5 +115,13 @@
         android:src="@drawable/ic_add"
         app:backgroundTint="#FFA726"
         app:tint="@android:color/white" />
-
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:menu="@menu/bottom_navigation_menu"
+        app:labelVisibilityMode="labeled"
+        app:itemIconTint="@color/colorPrimary"
+        app:itemTextColor="@color/colorPrimary" />
 </LinearLayout>

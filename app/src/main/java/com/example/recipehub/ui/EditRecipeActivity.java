@@ -31,7 +31,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class EditRecipeActivity extends CreateRecipeActivity {
-    private Recipe currentRecipe;
+    public Recipe currentRecipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +44,7 @@ public class EditRecipeActivity extends CreateRecipeActivity {
         // Заполнить поля данными рецепта
         populateRecipeData();
     }
-
+    private List<String> categoryNames = new ArrayList<>();
     private void populateRecipeData() {
         if (currentRecipe == null) return;
 
@@ -58,7 +58,7 @@ public class EditRecipeActivity extends CreateRecipeActivity {
         if (currentRecipe.getCategory() != null) {
             for (int i = 0; i < categories.size(); i++) {
                 if (categories.get(i).getCategory_id() == currentRecipe.getCategory().getCategory_id()) {
-                    spinnerCategory.setSelection(i + 1); // +1 потому что первая позиция "Оберіть категорію"
+                    actvCategory.setText(categoryNames.get(i + 1), false);
                     break;
                 }
             }

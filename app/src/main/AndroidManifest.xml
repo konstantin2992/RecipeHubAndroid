@@ -39,14 +39,15 @@
         <activity android:name=".ui.EditProfileActivity" />
         <activity
             android:name=".ui.CreateRecipeActivity"
-            android:label="Створення рецепту"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
 
         <activity android:name=".ui.EditRecipeActivity" />
         <activity
             android:name=".ui.AuthActivity"
             android:exported="true" />
         <activity android:name=".ui.RecipeDetailActivity" />
+
 
 
         <activity
