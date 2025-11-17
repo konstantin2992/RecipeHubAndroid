@@ -140,6 +140,12 @@ public class SearchRecipesFragment extends Fragment {
     }
 
     private void setupCategorySpinner(List<Category> loadedCategories) {
+
+        if (!isAdded() || getContext() == null) {
+            Log.d("SearchDebug", "Fragment not attached, skipping spinner setup");
+            return;
+        }
+
         this.categories.clear();
         this.categories.addAll(loadedCategories);
 
@@ -156,6 +162,10 @@ public class SearchRecipesFragment extends Fragment {
     }
 
     private void setupDefaultCategories() {
+        if (!isAdded() || getContext() == null) {
+            Log.d("SearchDebug", "Fragment not attached, skipping default categories");
+            return;
+        }
         String[] defaultCategories = {"Всі категорії", "Сніданки", "Обіди", "Вечері", "Десерти",
                 "Салати", "Супи", "Напої", "Випічка", "Закуски", "Основні страви"};
 

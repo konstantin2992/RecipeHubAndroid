@@ -1,5 +1,7 @@
 package com.example.recipehub.ui;
 
+import static java.security.AccessController.getContext;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -151,9 +153,25 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
 
     protected void loadCategories() {
+
+        if (api == null) {
+            api = RetrofitClient.getInstance().create(ApiService.class);
+        }
+
+        // Проверяем перед началом запроса
+        if (isFinishing() || isDestroyed()) {
+            Log.d("CreateRecipe", "Activity finishing, skipping spinner setup");
+            return;
+        }
         api.getCategories().enqueue(new Callback<CategoryResponse>() {
             @Override
             public void onResponse(Call<CategoryResponse> call, Response<CategoryResponse> response) {
+                if (isFinishing() || isDestroyed()) {
+                    Log.d("CreateRecipe", "Activity finishing, skipping spinner setup");
+                    return;
+                }
+
+
                 if (response.isSuccessful() && response.body() != null) {
                     categories = response.body().getCategories();
                     List<String> categoryNames = new ArrayList<>();
@@ -189,6 +207,10 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<CategoryResponse> call, Throwable t) {
+                if (isFinishing() || isDestroyed()) {
+                    Log.d("CreateRecipe", "Activity finishing, skipping spinner setup");
+                    return;
+                }
                 setupDefaultCategories();
             }
         });
